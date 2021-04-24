@@ -12,19 +12,19 @@ in addition, it is a strongly typed knowledge graph that needs a schema definiti
 
 The idea arounf KRAAL is quite simple. The provided Graql scripts define the below concepts:
 
-1. ```rdf-node``` which represents a node in a RDF graph. This is an abstract string attribute that has some concrete sub-concepts:
-	1. ```rdf-blank-node``` a blank node, notice each blank node has a unique identifier.
-	2.  ```rdf-uri-reference``` a URI.
-	3.  ```rdf-literal``` a literal. Literals have an optonal data type and language tag attached.
+1. `rdf-node` which represents a node in a RDF graph. This is an abstract string attribute that has some concrete sub-concepts:
+	1. `rdf-blank-node` a blank node, notice each blank node has a unique identifier.
+	2.  `rdf-uri-reference` a URI.
+	3.  `rdf-literal` a literal. Literals have an optonal data type and language tag attached.
 
-2. ```rdf-triple``` is a ternary relationship representing an RDF triple.
+2. `rdf-triple` is a ternary relationship representing an RDF triple.
 
 In addition, scripts create rules to represent semantic of predicates in a way that triples are inferred and materialized accordingly to existing facts.
 
 Lastly some Java code is provided to import RDF triples from various file format into Grakn, using the above concepts.
 
 In the end, once that the above schema and rules ar created, Grakn can be used as an RDF triple store (with tr
-iples stored as ```rdf-triple``` relations)
+iples stored as `rdf-triple` relations)
 with an integrated reasoner (provided by the semantic rules).
 
 
@@ -45,7 +45,7 @@ Please make sure you have [downloaded](https://www.oracle.com/java/technologies/
 Grakn core (which comes with an intrated text-basde console)
 can be downloaded and installed from the [Grakn website](https://grakn.ai/download#core).
 
-1. Download the .zip file and unzip it in a folder of your choice (we will call it `<grakn>`).
+1. Download the `.zip` file and unzip it in a folder of your choice (we will call it `<grakn>`).
 
 2. Change `<grkn>\grakn.bat` (or similar script) so it calls the 1.8 JRE installed above,
   instead of default one that can be an unsupported  version.
@@ -60,42 +60,40 @@ on the Grakn website to familiarize a bit with Grakn and its console.
 
 ## RdfImporter ##
 
-This is a small Java utility to import RDF files into Grakn.
+This is a small Java utility to import RDF files into Grakn. It is provided as a `.jar` file under the Release.
 Notice that, in order to use the tool, you must have created the required RDF support (that is schema includign rules) 
 as explained below.
 
 The tools allows imporing data from RDF files in various formats.
 
-´´´java -jar RdfImport.jar -k rdf -f TTL 22-rdf-syntax-ns.ttl rdf-schema.ttl´´´
+´´´
+java -jar RdfImport.jar io.github.mzattera.semanticweb.kraal.RdfImporter [options]
 
-usage: io.github.mzattera.semanticweb.kraal.RdfImporter -k <arg> -f <arg>
-                                                        [-u <arg>] [-s
-                                                        <arg>] file1
-                                                        [file2] ...
- -f <arg>   Format of input file.
- -k <arg>   Key space to use for importing.
- -s <arg>   "Batch" size; perform this many insertions before committing a
-            transaction. Higher values might speed up execution, as long
-            as you have enough memory.
- -u <arg>   Base URI to use for nodes without a base.
+	usage: io.github.mzattera.semanticweb.kraal.RdfImporter -k <arg> -f <arg> [-u <arg>] [-s <arg>] file1 [file2] ...
+	 -f <arg>   Format of input file.
+	 -k <arg>   Key space to use for importing.
+	 -s <arg>   "Batch" size; perform this many insertions before committing a
+				transaction. Higher values might speed up execution, as long
+				as you have enough memory.
+	 -u <arg>   Base URI to use for nodes without a base.
 
-Recognized file formats:
+	Recognized file formats:
 
-	RDF:	RDF/XML
-	NT:	N-Triples file format (.nt)
-	TTL:	Turtle file format (.ttl)
-	TTLS:	Turtle* (TurtleStar) file format (.ttls)
-	N3:	N3/Notation3 file format (.n3)
-	TRIX:	TriX
-	TRIG:	TriG file format (.trig)
-	TRIGS:	TriG* (TriGStar) file format (.trigs)
-	BRF:	A binary RDF format (.brf)
-	NQ:	N-Quads file format (.nq)
-	JSONLD:	JSON-LD file format (.jsonld)
-	RJ:	RDF/JSON file format (.rj)
-	RDFA:	RDFa file format (.xhtml)
-	HDT:	HDT file format (.hdt)
-
+		RDF:	RDF/XML
+		NT:	N-Triples file format (.nt)
+		TTL:	Turtle file format (.ttl)
+		TTLS:	Turtle* (TurtleStar) file format (.ttls)
+		N3:	N3/Notation3 file format (.n3)
+		TRIX:	TriX
+		TRIG:	TriG file format (.trig)
+		TRIGS:	TriG* (TriGStar) file format (.trigs)
+		BRF:	A binary RDF format (.brf)
+		NQ:	N-Quads file format (.nq)
+		JSONLD:	JSON-LD file format (.jsonld)
+		RJ:	RDF/JSON file format (.rj)
+		RDFA:	RDFa file format (.xhtml)
+		HDT:	HDT file format (.hdt)
+```
 
 ## Graql scripts 
 
@@ -106,7 +104,7 @@ In addition, it contains RDF files with vocabularies.
 
 ### RDF and RDF Schema support 
 
-The file ```rdf.gql``` is a Graql schema that adds support for RDF. 
+The file `rdf.gql` is a Graql schema that adds support for RDF. 
 In addition, it adds some rules so to implement [RDF Schema 1.1](https://www.w3.org/TR/rdf-schema/)
 semantics on top of Grakn.
 		
