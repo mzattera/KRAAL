@@ -66,7 +66,7 @@ as explained below.
 
 The tools allows imporing data from RDF files in various formats.
 
-´´´
+```
 java -jar RdfImport.jar io.github.mzattera.semanticweb.kraal.RdfImporter [options]
 
 	usage: io.github.mzattera.semanticweb.kraal.RdfImporter -k <arg> -f <arg> [-u <arg>] [-s <arg>] file1 [file2] ...
