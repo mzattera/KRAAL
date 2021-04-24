@@ -9,8 +9,8 @@
 	<description>Glue code for KRAAL</description>
 	<properties>
 		<grkn-client-version>1.8.3</grkn-client-version>
-		<maven.compiler.source>1.15</maven.compiler.source>
-		<maven.compiler.target>1.15</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
