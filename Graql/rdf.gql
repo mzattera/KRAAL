@@ -1,0 +1,176 @@
+define
+
+	
+## RDF Graphs defined ##################################################################
+
+## TODO make sure it matches this https://www.w3.org/TR/rdf11-concepts/
+
+
+## Node in RDF graph
+rdf-node sub attribute, abstract,
+	value string;
+
+## A node that is not a literal (useful for "match" queries)
+rdf-non-literal sub rdf-node, abstract,
+	plays rdf-triple:rdf-subject,
+	plays rdf-triple:rdf-object;
+
+## Blank node. Note blank nodes have a "value" that uniquely identifies them; they are not singletons.
+rdf-blank-node sub rdf-non-literal;
+
+## An IRI; this is a unique string-node in the graph, this can be also a predicate in a triple
+## TODO Grakn 2.0 doe NOT allow to subtype a non-abstract attribute to be checked why; this is a workaround
+rdf-abstract-IRI sub rdf-non-literal, abstract,
+	plays rdf-triple:rdf-predicate;
+rdf-IRI sub rdf-abstract-IRI;
+
+## Definition of literals, they will have a data type and eventually a language tag.
+rdf-literal sub rdf-node,
+	owns rdf-datatype,
+	owns rdf-language-tag,
+	plays rdf-triple:rdf-object;
+
+rdf-datatype sub rdf-abstract-IRI;
+
+rdf-language-tag sub attribute,
+	value string;
+	
+## RDF triples
+rdf-triple sub relation,
+	relates rdf-subject,
+	relates rdf-predicate,
+	relates rdf-object;
+
+
+	
+## RDF Schema Semantic #################################################################
+
+## TODO Make sure this matches https://www.w3.org/TR/rdf11-mt/
+
+
+## NOTE that rdfs:ContainerMembershipProperty is not handled by rules.
+## Rather, when the Java importer imports a triple with a predicate like rdf:_1, rdf:_2, rdf:_3 ...
+## it is marked as a rdfs:subPropertyOf of rdfs:member.
+## It seems the only viable way of implementing this semantic.
+
+## C rdfs:subClassOf C' states that all the instances of C are instances C'.	
+rule rdf-instancesOf-subclassof:
+when {
+	$subclass "http://www.w3.org/2000/01/rdf-schema#subClassOf" isa rdf-IRI;
+	$type "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" isa rdf-IRI;
+	(rdf-subject: $c, rdf-predicate: $subclass, rdf-object: $c1) isa rdf-triple;
+	(rdf-subject: $i, rdf-predicate: $type, rdf-object: $c) isa rdf-triple;
+} then {
+	(rdf-subject: $i, rdf-predicate: $type, rdf-object: $c1) isa rdf-triple;	
+};
+
+
+## subClassOf is reflexive (each class is a subclass of itself)
+## TODO
+
+## subClassOf is transitive
+rule rdf-transitive-subclassof:
+when {
+	$subclass "http://www.w3.org/2000/01/rdf-schema#subClassOf" isa rdf-IRI;
+	(rdf-subject: $x, rdf-predicate: $subclass, rdf-object: $z) isa rdf-triple;
+	(rdf-subject: $z, rdf-predicate: $subclass, rdf-object: $y) isa rdf-triple;
+} then {
+	(rdf-subject: $x, rdf-predicate: $subclass, rdf-object: $y) isa rdf-triple;	
+};
+
+## If a property P is a subproperty of property P',
+## then all pairs of resources which are related by P are also related by P'.
+rule rdf-sub-property:
+when {
+	$subprop "http://www.w3.org/2000/01/rdf-schema#subPropertyOf" isa rdf-IRI;
+	(rdf-subject: $p, rdf-predicate: $subprop, rdf-object: $p1) isa rdf-triple;
+	$p1 isa rdf-IRI;
+	(rdf-subject: $s, rdf-predicate: $p, rdf-object: $o) isa rdf-triple;
+	$p != $p1;
+} then {
+	(rdf-subject: $s, rdf-predicate: $p1, rdf-object: $o) isa rdf-triple;
+};
+	
+
+## subPropertyOf is transitive
+rule rdf-transitive-subpropertyof:
+when {
+	$subproperty "http://www.w3.org/2000/01/rdf-schema#subPropertyOf" isa rdf-IRI;
+	(rdf-subject: $x, rdf-predicate: $subproperty, rdf-object: $z) isa rdf-triple;
+	(rdf-subject: $z, rdf-predicate: $subproperty, rdf-object: $y) isa rdf-triple;
+} then {
+	(rdf-subject: $x, rdf-predicate: $subproperty, rdf-object: $y) isa rdf-triple;	
+};
+
+
+## The triple P rdfs:range C states that:
+## 		P is an instance of the class rdf:Property
+##		C is an instance of the class rdfs:Class 
+## 		the resources denoted by the objects of triples whose predicate is P are instances of the class C.
+rule rdf-properties-have-range:
+when {
+	$range "http://www.w3.org/2000/01/rdf-schema#range" isa rdf-IRI;
+	$type "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" isa rdf-IRI;
+	$property "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" isa rdf-IRI;
+	(rdf-subject: $p, rdf-predicate: $range, rdf-object: $c) isa rdf-triple;
+} then {
+	(rdf-subject: $p, rdf-predicate: $type, rdf-object: $property) isa rdf-triple;
+};
+
+rule rdf-classes-are-range:
+when {
+	$range "http://www.w3.org/2000/01/rdf-schema#range" isa rdf-IRI;
+	$type "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" isa rdf-IRI;
+	$class "http://www.w3.org/2000/01/rdf-schema#Class" isa rdf-IRI;
+	(rdf-subject: $p, rdf-predicate: $range, rdf-object: $c) isa rdf-triple;
+	$c isa rdf-non-literal;
+} then {
+	(rdf-subject: $c, rdf-predicate: $type, rdf-object: $class) isa rdf-triple;
+};
+
+rule rdf-instances-in-range:
+when {
+	$range "http://www.w3.org/2000/01/rdf-schema#range" isa rdf-IRI;
+	$type "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" isa rdf-IRI;
+	(rdf-subject: $p, rdf-predicate: $range, rdf-object: $c) isa rdf-triple;
+	(rdf-predicate: $p, rdf-object: $r) isa rdf-triple;
+	$r isa rdf-non-literal;
+} then {
+	(rdf-subject: $r, rdf-predicate: $type, rdf-object: $c) isa rdf-triple;
+};
+
+
+## A triple of the form P rdfs:domain C states that
+##		P is an instance of the class rdf:Property, 
+##		C is a instance of the class rdfs:Class 
+##		the resources denoted by the subjects of triples whose predicate is P are instances of the class C.
+rule rdf-properties-have-domain:
+when {
+	$domain "http://www.w3.org/2000/01/rdf-schema#domain" isa rdf-IRI;
+	$type "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" isa rdf-IRI;
+	$property "http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" isa rdf-IRI;
+	(rdf-subject: $p, rdf-predicate: $domain, rdf-object: $c) isa rdf-triple;
+} then {
+	(rdf-subject: $p, rdf-predicate: $type, rdf-object: $property) isa rdf-triple;
+};
+
+rule rdf-classes-are-domain:
+when {
+	$domain "http://www.w3.org/2000/01/rdf-schema#domain" isa rdf-IRI;
+	$type "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" isa rdf-IRI;
+	$class "http://www.w3.org/2000/01/rdf-schema#Class" isa rdf-IRI;
+	(rdf-subject: $p, rdf-predicate: $domain, rdf-object: $c) isa rdf-triple;
+	$c isa rdf-non-literal;
+} then {
+	(rdf-subject: $c, rdf-predicate: $type, rdf-object: $class) isa rdf-triple;
+};
+
+rule rdf-instances-in-domain:
+when {
+	$domain "http://www.w3.org/2000/01/rdf-schema#domain" isa rdf-IRI;
+	$type "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" isa rdf-IRI;
+	(rdf-subject: $p, rdf-predicate: $domain, rdf-object: $c) isa rdf-triple;
+	(rdf-predicate: $p, rdf-subject: $r) isa rdf-triple;
+} then {
+	(rdf-subject: $r, rdf-predicate: $type, rdf-object: $c) isa rdf-triple;
+};
