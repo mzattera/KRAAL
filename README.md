@@ -22,9 +22,9 @@ The idea around KRAAL is quite simple. The provided Graql scripts define the bel
 
 In addition, scripts create rules to represent semantic of predicates in a way that triples are inferred and materialized accordingly to existing facts.
 
-Lastly some Java code is provided to import RDF triples from various file format into Grakn, using the above concepts.
+Lastly, some Java code is provided to import RDF triples from various file format into Grakn, using the above concepts.
 
-In the end, once that the above schema and rules are created, Grakn can be used as an RDF triple store (with triples stored as `rdf-triple` relations) with an integrated reasoner (provided by the semantic rules).
+In the end, once the above schema and rules are imported, Grakn can be used as an RDF triple store (with triples stored as `rdf-triple` relations) with an integrated reasoner (provided by the semantic rules).
 
 
 ## Prerequisites
@@ -58,12 +58,12 @@ on the Grakn website to familiarize a bit with Grakn and its console.
 
 ## RdfImporter
 
-This is a small Java utility to import RDF files into Grakn. It is provided as a `.jar` file under the `Graql` folder.
+This is a small Java utility to import RDF files into Grakn. It is provided as a `RdfImporter.jar` under the `Graql` folder.
 Notice that, in order to use the tool, you must have created the required RDF support (that is schema and rules) 
-as explained below.
+as explained in next section below.
 
 ```
-java -jar RdfImport.jar io.github.mzattera.semanticweb.kraal.RdfImporter -k <arg> -f <arg> [-u <arg>] [-s <arg>] file1 [file2] ...
+java -jar RdfImporter.jar io.github.mzattera.semanticweb.kraal.RdfImporter -k <arg> -f <arg> [-u <arg>] [-s <arg>] file1 [file2] ...
 
 	-f <arg>   Format of input file.
 	-k <arg>   Key space to use for importing.
@@ -120,11 +120,11 @@ named `rdf`and import the schema there. Please refer to Grankn console docmentat
 	Transaction changes committed
 	```
 		
-2. 	Then you must import RDF and RDF Schema vocabularies using `RdfImport` import utility as shown below.
+2. 	Then you must import RDF and RDF Schema vocabularies into the `rdf` database using `RdfImport` import utility as shown below.
 In this example we assume `.jar` and vocabularies are in the same folder from where you 
 run the command.
 
-```java -jar RdfImport.jar io.github.mzattera.semanticweb.kraal.RdfImporter -k <keyspace> -f TTL 22-rdf-syntax-ns.ttl rdf-schema.ttl```
+```java -jar RdfImporter.jar io.github.mzattera.semanticweb.kraal.RdfImporter -k rdf -f TTL 22-rdf-syntax-ns.ttl rdf-schema.ttl```
 
 
 ## Graql Editor
