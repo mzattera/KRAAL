@@ -75,17 +75,17 @@ java -jar RdfImporter.jar -k <arg> -f <arg> [-u <arg>] [-s <arg>] file1 [file2] 
 	
 
 		RDF:	RDF/XML
-		NT:		N-Triples file format (.nt)
+		NT:	N-Triples file format (.nt)
 		TTL:	Turtle file format (.ttl)
 		TTLS:	Turtle* (TurtleStar) file format (.ttls)
-		N3:		N3/Notation3 file format (.n3)
+		N3:	N3/Notation3 file format (.n3)
 		TRIX:	TriX
 		TRIG:	TriG file format (.trig)
 		TRIGS:	TriG* (TriGStar) file format (.trigs)
 		BRF:	A binary RDF format (.brf)
-		NQ:		N-Quads file format (.nq)
+		NQ:	N-Quads file format (.nq)
 		JSONLD:	JSON-LD file format (.jsonld)
-		RJ:		RDF/JSON file format (.rj)
+		RJ:	RDF/JSON file format (.rj)
 		RDFA:	RDFa file format (.xhtml)
 		HDT:	HDT file format (.hdt)
 ```
