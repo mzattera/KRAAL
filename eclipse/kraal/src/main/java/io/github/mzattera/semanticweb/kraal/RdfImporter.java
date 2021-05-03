@@ -28,6 +28,8 @@ import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.helpers.StatementCollector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import grakn.client.Grakn;
 import grakn.client.api.GraknClient;
@@ -37,7 +39,6 @@ import grakn.client.api.GraknTransaction;
 import grakn.client.api.answer.ConceptMap;
 import graql.lang.Graql;
 import graql.lang.pattern.variable.ThingVariable.Attribute;
-import graql.lang.query.GraqlCompute.Path;
 import graql.lang.query.GraqlInsert;
 import io.github.mzattera.semanticweb.util.Utils;
 
@@ -49,16 +50,16 @@ import io.github.mzattera.semanticweb.util.Utils;
  *
  */
 public final class RdfImporter implements Closeable {
+	
+    private static final Logger logger = LoggerFactory.getLogger(RdfImporter.class);
 
 	private static final String DEFAULT_BASE_URI = "http://io.github.mzattera.semanticweb/#";
 
 	// We insert at maximum this number of triplets before performing a commit()
 	private static final int DEFAULT_TRIPLES_PER_TRANSACTION = 1500;
 
-	// TODO check if it is OK to get core.
-	private static final GraknOptions QUERY_OPTIONS = GraknOptions.core().infer(false).explain(false).batchSize(1);
-
 	// Client connected to the host
+	// TODO Now supports only CORE.
 	private final GraknClient client;
 
 	// Opened session to the host
@@ -77,7 +78,7 @@ public final class RdfImporter implements Closeable {
 	}
 
 	/**
-	 * Creates a client to given host (and port).
+	 * Creates a CORE client to given host (and port).
 	 * 
 	 * @param host The Grakn host:port to connect to.
 	 * @param db   The database to connect to.
@@ -85,6 +86,20 @@ public final class RdfImporter implements Closeable {
 	public RdfImporter(String host, String db) {
 		client = Grakn.coreClient(host);
 		session = client.session(db, GraknSession.Type.DATA);
+		logger.info("Connected to fatabase " + db + " on " + host);
+	}
+
+	/**
+	 * Creates a CORE client to given host (and port).
+	 * 
+	 * @param host The Grakn host:port to connect to.
+	 * @param db   The database to connect to.
+	 * @param options Server optiosn to use.
+	 */
+	public RdfImporter(String host, String db, GraknOptions options) {
+		client = Grakn.coreClient(host);
+		session = client.session(db, GraknSession.Type.DATA, options);
+		logger.info("Connected to fatabase " + db + " on " + host);
 	}
 
 	/**
@@ -100,7 +115,7 @@ public final class RdfImporter implements Closeable {
 	public void importFile(String fileName, RDFFormat format, String baseUri, int batchSize)
 			throws FileNotFoundException, IOException, RDFParseException {
 
-		System.out.print(fileName + ": 0.. ");
+		logger.debug("IMPORTING TRIPLES from " + fileName + ": 0.. ");
 
 		createdResources.clear();
 
@@ -112,7 +127,8 @@ public final class RdfImporter implements Closeable {
 
 		// TODO Encoding?
 		File in = new File(fileName);
-		if (!in.canRead()) throw new FileNotFoundException("Cannot access file: " + in.getCanonicalPath());
+		if (!in.canRead())
+			throw new FileNotFoundException("Cannot access file: " + in.getCanonicalPath());
 		try (InputStream is = new FileInputStream(fileName)) {
 			rdfParser.parse(is, baseUri);
 		} // close input stream
@@ -120,8 +136,8 @@ public final class RdfImporter implements Closeable {
 		int rows = 0;
 		int tot = 0;
 
-		// TODO can we reuse transaction? probably so....
-		GraknTransaction writeTransaction = commitAndReopenTransaction(session, null);
+		// TODO Make global....
+		GraknTransaction writeTransaction = commitAndReopenTransaction(null);
 
 		for (Statement s : statements) {
 
@@ -146,27 +162,26 @@ public final class RdfImporter implements Closeable {
 					.insert(Graql.var("t").rel("rdf-subject", "s").rel("rdf-predicate", "p").rel("rdf-object", "o")
 							.isa("rdf-triple"));
 
-			Stream<ConceptMap> inserted = writeTransaction.query().insert(query, QUERY_OPTIONS);
+			Stream<ConceptMap> inserted = writeTransaction.query().insert(query);
 			if (inserted.count() != 1) {
-				// TODO proper logging and handling
-				System.out.println("\tS:\t" + Utils.toString(sbj) + "\t" + sbj.getClass().getName());
-				System.out.println("\tP:\t" + Utils.toString(pred) + "\t" + pred.getClass().getName());
-				System.out.println("\tO:\t" + Utils.toString(obj) + "\t" + obj.getClass().getName());
+				// TODO proper handling
+				logger.error("\tS:\t" + Utils.toString(sbj) + "\t" + sbj.getClass().getName());
+				logger.error("\tP:\t" + Utils.toString(pred) + "\t" + pred.getClass().getName());
+				logger.error("\tO:\t" + Utils.toString(obj) + "\t" + obj.getClass().getName());
 				throw new RuntimeException(inserted.count() + " rdf-triple were inserted.");
 			}
 
 			++tot;
 			if (++rows >= batchSize) {
-				writeTransaction = commitAndReopenTransaction(session, writeTransaction);
-				System.out.print(tot + "... ");
+				writeTransaction = commitAndReopenTransaction(writeTransaction);
+				logger.debug("IMPORTING TRIPLES from " + fileName + " " + tot + "...");
 				rows = 0;
 			}
 		} // for each RDF statement
 
 		// close writeTransaction
 		writeTransaction.commit();
-		writeTransaction.close();
-		System.out.println(tot + " <end>");
+		logger.debug("IMPORTING TRIPLES from " + fileName + " " + tot + " FINISHED!");
 	}
 
 	@Override
@@ -215,10 +230,8 @@ public final class RdfImporter implements Closeable {
 			throw new UnsupportedOperationException();
 		}
 
-		if (writeTransaction.query().insert(query, QUERY_OPTIONS).count() != 1)
+		if (writeTransaction.query().insert(query).count() != 1)
 			throw new RuntimeException(v.stringValue() + " not inserted.");
-
-		createdResources.add(v.stringValue());
 
 		if (v.isIRI()) {
 			// Special handling is needed for rdfs:ContainerMembershipProperty
@@ -240,12 +253,14 @@ public final class RdfImporter implements Closeable {
 							.insert(Graql.var("t").rel("rdf-subject", "s").rel("rdf-predicate", "p")
 									.rel("rdf-object", "o").isa("rdf-triple"));
 
-					if (writeTransaction.query().insert(query, QUERY_OPTIONS).count() != 1)
+					if (writeTransaction.query().insert(query).count() != 1)
 						throw new RuntimeException(v.stringValue() + " not properly marked as rdfs:memeber.");
 				} catch (NumberFormatException e) {
 				}
 			}
 		}
+
+		createdResources.add(v.stringValue());
 	}
 
 	/**
@@ -255,10 +270,9 @@ public final class RdfImporter implements Closeable {
 	 * @param t       Current transaction, if any, or null.
 	 * @return
 	 */
-	private GraknTransaction commitAndReopenTransaction(GraknSession session, GraknTransaction t) {
+	private GraknTransaction commitAndReopenTransaction(GraknTransaction t) {
 		if (t != null) {
 			t.commit();
-			t.close();
 		}
 
 		return session.transaction(GraknTransaction.Type.WRITE);

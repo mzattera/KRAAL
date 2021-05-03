@@ -63,10 +63,10 @@ Notice that, in order to use the tool, you must have created the required RDF su
 as explained in next section below.
 
 ```
-java -jar RdfImporter.jar io.github.mzattera.semanticweb.kraal.RdfImporter -k <arg> -f <arg> [-u <arg>] [-s <arg>] file1 [file2] ...
+java -jar RdfImporter.jar -k <arg> -f <arg> [-u <arg>] [-s <arg>] file1 [file2] ...
 
 	-f <arg>   Format of input file.
-	-k <arg>   Key space to use for importing.
+	-k <arg>   Database to use for importing.
 	-s <arg>   "Batch" size; perform this many insertions before committing a
 				transaction. Higher values might speed up execution, as long
 				as you have enough memory.
@@ -76,17 +76,17 @@ java -jar RdfImporter.jar io.github.mzattera.semanticweb.kraal.RdfImporter -k <a
 	
 
 		RDF:	RDF/XML
-		NT:	N-Triples file format (.nt)
+		NT:		N-Triples file format (.nt)
 		TTL:	Turtle file format (.ttl)
 		TTLS:	Turtle* (TurtleStar) file format (.ttls)
-		N3:	N3/Notation3 file format (.n3)
+		N3:		N3/Notation3 file format (.n3)
 		TRIX:	TriX
 		TRIG:	TriG file format (.trig)
 		TRIGS:	TriG* (TriGStar) file format (.trigs)
 		BRF:	A binary RDF format (.brf)
-		NQ:	N-Quads file format (.nq)
+		NQ:		N-Quads file format (.nq)
 		JSONLD:	JSON-LD file format (.jsonld)
-		RJ:	RDF/JSON file format (.rj)
+		RJ:		RDF/JSON file format (.rj)
 		RDFA:	RDFa file format (.xhtml)
 		HDT:	HDT file format (.hdt)
 ```
@@ -124,7 +124,7 @@ named `rdf`and import the schema there. Please refer to Grankn console docmentat
 In this example we assume `.jar` and vocabularies are in the same folder from where you 
 run the command.
 
-```java -jar RdfImporter.jar io.github.mzattera.semanticweb.kraal.RdfImporter -k rdf -f TTL 22-rdf-syntax-ns.ttl rdf-schema.ttl```
+```java -jar RdfImporter.jar -k rdf -f TTL 22-rdf-syntax-ns.ttl rdf-schema.ttl```
 
 
 ## Graql Editor
@@ -136,4 +136,5 @@ The file `Notepad++/graql.xml` is a language definition that adds syntax colorin
 ## How to release
 
 Export `RdfImporter` from Eclipse as executable `.jar` file inside `Graql` folder.
+The main class is `io.github.mzattera.semanticweb.kraal.RdfImporter`.
 
