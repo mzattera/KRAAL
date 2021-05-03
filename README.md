@@ -1,6 +1,6 @@
 # KRAAL
 
-KRAAL (Knowledge and Reasoning Awesome Algorithms and L? - OK, I made this up) is a set of Graql scripts and ontologies aiming at transforming [Grakn](https://grakn.ai/) into a RDF triple store with integrated OWL reasoner.
+KRAAL (Knowledge and Reasoning Awesome Algorithms with Limits) is a set of Graql scripts and ontologies aiming at transforming [Grakn](https://grakn.ai/) into a RDF triple store with integrated RDFS (and in the future OWL) reasoner.
 
 In addition, some "glue" code to import RDF into Grakn is provided.
 
@@ -39,8 +39,7 @@ Grakn 2.0.2 needs Java 11 or higher to run. The Java code in this repository is 
 Please make sure you have [downloaded](https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html) and installed Java 11 on your machine.
 Both Oracle Java and OpenJDK will work.
 
-The `grakn.bat` file in Grakns distruiution below, calls Java to start the server. If zour default JRE is not compatible with Grakn
-zou can edit this file to point to the correct JRE.
+The `grakn.bat` file in Grakn distribution below, calls Java to start the server. If your default JRE is not compatible with Grakn, you can edit this file to point to the correct JRE.
 
 
 ### Grakn 
@@ -94,7 +93,7 @@ java -jar RdfImporter.jar -k <arg> -f <arg> [-u <arg>] [-s <arg>] file1 [file2] 
 
 ## Graql scripts 
 
-The folder Graql contains Graql script needed to implement required concepts and rules.
+The folder `Graql` contains Graql script needed to implement required concepts and rules.
 In addition, it contains RDF files with vocabularies.
 
 
@@ -105,7 +104,7 @@ In addition, it adds some rules so to implement [RDF Schema 1.1](https://www.w3.
 semantics.
 		
 1. To import the schema you can use Grakn console. the below shows how to create a blank databased 
-named `rdf`and import the schema there. Please refer to Grankn console docmentaton for details.
+named `rdf`and import the schema there. Please refer to Grakn console documentation for details.
 
 	```
 	Welcome to Grakn Console. You are now in Grakn Wonderland!
@@ -120,7 +119,7 @@ named `rdf`and import the schema there. Please refer to Grankn console docmentat
 	Transaction changes committed
 	```
 		
-2. 	Then you must import RDF and RDF Schema vocabularies into the `rdf` database using `RdfImport` import utility as shown below.
+2. 	Then you must import RDF and RDF Schema vocabularies into the `rdf` database using `RdfImporter` import utility as shown below.
 In this example we assume `.jar` and vocabularies are in the same folder from where you 
 run the command.
 
