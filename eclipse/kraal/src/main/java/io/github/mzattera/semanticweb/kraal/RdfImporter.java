@@ -86,7 +86,7 @@ public final class RdfImporter implements Closeable {
 	public RdfImporter(String host, String db) {
 		client = Grakn.coreClient(host);
 		session = client.session(db, GraknSession.Type.DATA);
-		logger.info("Connected to fatabase " + db + " on " + host);
+		logger.info("Connected to database " + db + " on " + host);
 	}
 
 	/**
@@ -99,7 +99,7 @@ public final class RdfImporter implements Closeable {
 	public RdfImporter(String host, String db, GraknOptions options) {
 		client = Grakn.coreClient(host);
 		session = client.session(db, GraknSession.Type.DATA, options);
-		logger.info("Connected to fatabase " + db + " on " + host);
+		logger.info("Connected to database " + db + " on " + host);
 	}
 
 	/**

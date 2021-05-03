@@ -1,0 +1,43 @@
+## rule rdf-instancesOf-subclassof:
+## Milo as RedHusky > Husky > Dog > Animal
+match $t (rdf-subject:$s, rdf-predicate:$p, rdf-object:$o) isa rdf-triple; $s "http://mz.name/#Milo"; get $s, $p, $o;
+ 
+## rule rdf-reflexive-subclassof:
+## Animal is a subclas of itself
+match $t (rdf-subject:$s, rdf-predicate:$p, rdf-object:$o) isa rdf-triple; $s "http://mz.name/#Animal"; get $s, $p, $o;
+ 
+## rule rdf-transitive-subclassof:
+## RedHusky > Husky > Dog > Animal
+match $t (rdf-subject:$s, rdf-predicate:$p, rdf-object:$o) isa rdf-triple; $s "http://mz.name/#RedHusky"; get $s, $p, $o;
+
+## rule rdf-sub-property:
+## reallyReallyHates > reallyHates > hates > Property
+match $t (rdf-subject:$s, rdf-predicate:$p, rdf-object:$o) isa rdf-triple; $s "http://mz.name/#Grebo"; get $s, $p, $o;
+
+##rule rdf-transitive-subpropertyof:
+## reallyReallyHates > reallyHates > hates > Property
+match $t (rdf-subject:$s, rdf-predicate:$p, rdf-object:$o) isa rdf-triple; $s "http://mz.name/#reallyReallyHates"; get $s, $p, $o;
+
+## rule rdf-properties-have-range:
+## hasColor is a Property
+match $t (rdf-subject:$s, rdf-predicate:$p, rdf-object:$o) isa rdf-triple; $s "http://mz.name/#hasColor"; get $s, $p, $o;
+
+## rule rdf-classes-are-range:
+## Color is a class
+match $t (rdf-subject:$s, rdf-predicate:$p, rdf-object:$o) isa rdf-triple; $s "http://mz.name/#Color"; get $s, $p, $o;
+
+## rule rdf-instances-in-range:
+## red is a Color
+match $t (rdf-subject:$s, rdf-predicate:$p, rdf-object:$o) isa rdf-triple; $s "http://mz.name/#red"; get $s, $p, $o;
+
+## rule rdf-properties-have-domain:
+## isPoisonous is a Property
+match $t (rdf-subject:$s, rdf-predicate:$p, rdf-object:$o) isa rdf-triple; $s "http://mz.name/#isPoisonous"; get $s, $p, $o;
+
+## rule rdf-classes-are-domain:
+## Mushroom is a class
+match $t (rdf-subject:$s, rdf-predicate:$p, rdf-object:$o) isa rdf-triple; $s "http://mz.name/#Mushroom"; get $s, $p, $o;
+
+## rule rdf-instances-in-domain:
+## Amanita is a Mushroom
+match $t (rdf-subject:$s, rdf-predicate:$p, rdf-object:$o) isa rdf-triple; $s "http://mz.name/#Amanita"; get $s, $p, $o;

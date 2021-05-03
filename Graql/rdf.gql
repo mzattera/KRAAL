@@ -66,7 +66,16 @@ when {
 
 
 ## subClassOf is reflexive (each class is a subclass of itself)
-## TODO
+rule rdf-reflexive-subclassof:
+when {
+	$class "http://www.w3.org/2000/01/rdf-schema#Class" isa rdf-IRI;
+	$subclass "http://www.w3.org/2000/01/rdf-schema#subClassOf" isa rdf-IRI;
+	$type "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" isa rdf-IRI;
+	(rdf-subject: $c, rdf-predicate: $type, rdf-object: $class) isa rdf-triple;
+} then {
+	(rdf-subject: $c, rdf-predicate: $subclass, rdf-object: $c) isa rdf-triple;	
+};
+
 
 ## subClassOf is transitive
 rule rdf-transitive-subclassof:
@@ -78,6 +87,7 @@ when {
 	(rdf-subject: $x, rdf-predicate: $subclass, rdf-object: $y) isa rdf-triple;	
 };
 
+
 ## If a property P is a subproperty of property P',
 ## then all pairs of resources which are related by P are also related by P'.
 rule rdf-sub-property:
@@ -86,7 +96,6 @@ when {
 	(rdf-subject: $p, rdf-predicate: $subprop, rdf-object: $p1) isa rdf-triple;
 	$p1 isa rdf-IRI;
 	(rdf-subject: $s, rdf-predicate: $p, rdf-object: $o) isa rdf-triple;
-	$p != $p1;
 } then {
 	(rdf-subject: $s, rdf-predicate: $p1, rdf-object: $o) isa rdf-triple;
 };
