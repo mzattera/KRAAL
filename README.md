@@ -124,7 +124,7 @@ named `rdf`and import the schema there. Please refer to Grankn console docmentat
 In this example we assume `.jar` and vocabularies are in the same folder from where you 
 run the command.
 
-```java -jar RdfImporter.jar -k rdf -f TTL 22-rdf-syntax-ns.ttl rdf-schema.ttl```
+	```java -jar RdfImporter.jar -k rdf -f TTL 22-rdf-syntax-ns.ttl rdf-schema.ttl```
 
 
 ## Graql Editor
