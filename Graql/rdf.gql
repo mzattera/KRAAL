@@ -19,7 +19,7 @@ rdf-non-literal sub rdf-node, abstract,
 rdf-blank-node sub rdf-non-literal;
 
 ## An IRI; this is a unique string-node in the graph, this can be also a predicate in a triple
-## TODO Grakn 2.0 doe NOT allow to subtype a non-abstract attribute to be checked why; this is a workaround
+## TODO Grakn 2.0 does NOT allow to subtype a non-abstract attribute to be checked why; this is a workaround
 rdf-abstract-IRI sub rdf-non-literal, abstract,
 	plays rdf-triple:rdf-predicate;
 rdf-IRI sub rdf-abstract-IRI;
