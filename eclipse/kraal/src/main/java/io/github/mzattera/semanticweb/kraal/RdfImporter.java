@@ -152,7 +152,7 @@ public final class RdfImporter implements Closeable {
 
 			// Insert the triple
 			// TODO Notice that if a relationship is inserted twice (e.g. from two files),
-			// it gets duplicated.
+			// it gets duplicated. Verify if this is correct and how to solve it.
 			// On the other hand, RDF resources are attributes and therefore never
 			// duplicated.
 			GraqlInsert query = Graql
