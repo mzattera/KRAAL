@@ -1,6 +1,6 @@
 # KRAAL
 
-KRAAL (Knowledge and Reasoning Awesome Algorithms with Limits) is a set of Graql scripts and ontologies aiming at transforming [Grakn](https://grakn.ai/) into a RDF triple store with integrated RDFS (and in the future OWL) reasoner.
+KRAAL (Knowledge and Reasoning Awesome Algorithms with Limits) is a set of Graql scripts and ontologies aiming at transforming [~~Grakn~~](https://grakn.ai/) [TypeDB](https://vaticle.com/) into a RDF triple store with integrated RDFS (and in the future OWL) reasoner.
 
 In addition, some "glue" code to import RDF into Grakn is provided.
 
