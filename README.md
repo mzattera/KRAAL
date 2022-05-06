@@ -103,7 +103,7 @@ The file `rdf.gql` is a Graql schema that adds support for RDF.
 In addition, it adds some rules so to implement [RDF Schema 1.1](https://www.w3.org/TR/rdf-schema/)
 semantics.
 		
-1. To import the schema you can use Grakn console. the below shows how to create a blank databased 
+1. To import the schema you can use Grakn console. the below shows how to create a blank database 
 named `rdf`and import the schema there. Please refer to Grakn console documentation for details.
 
 	```
